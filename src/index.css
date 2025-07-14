@@ -1,0 +1,91 @@
+.no-blink-cursor {
+  caret-color: transparent;
+  user-select: none;
+}
+
+.custom-placeholder::placeholder {
+    color: gray;  /* Default color */
+    opacity: 1;   /* Ensures visibility */
+}
+
+.custom-hover:hover {
+    border-color: #dc3545!important; /* Bootstrap danger color */
+    box-shadow: 0 0 5px #dc3545 !important; /* Glowing effect */
+    outline: none!important;
+}
+
+.custom-focus:focus {
+    border-color: #dc3545!important; /* Bootstrap danger color */
+    box-shadow: 0 0 5px #dc3545 !important; /* Glowing effect */
+    outline: none!important;
+}
+
+.main-content {
+    min-height: 80vh;  /* Ensures the section takes up 80% of the viewport height */
+    margin-top: 70px;  /* Adjust based on navbar height */
+    /* background-color:rgb(198, 195, 195); */
+}
+  
+.custom-line:hover {
+    color:  white!important; /* Bootstrap danger color */
+    cursor: pointer;
+}
+
+.custom-line:focus {
+    border-bottom: 2px solid white!important; /* Bootstrap danger color */
+    padding-bottom: 1px; 
+}
+  
+.custom-text {
+      display: block;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2; /* Limits text to 2 lines */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 3em; /* Adjust based on font size */
+      line-height: 1.5em; /* Maintains proper spacing */
+      white-space: normal; /* Allows multi-line truncation */
+    
+      /* Standard property (for future compatibility) */
+      display: flex;
+      flex-direction: column;
+      line-clamp: 2;
+}
+  
+
+.page-link {
+    border: 3px solid #dc3545 !important; /* Danger color border */
+}
+
+/* Default state for page numbers */
+.page-item .page-link {
+    color: red !important; /* Default red text */
+    background-color: #f8f9fa !important; /* Light grey background to differentiate from news board */
+    border: 3px solid #dc3545 !important; /* Danger color border */
+}
+
+/* Hover and Focus state */
+.page-item .page-link:hover {
+    color: #dc3545 !important; /* White text */
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.8) !important; /* Glowing effect */
+    outline: none !important;
+}
+
+.page-item .page-link:focus {
+    background-color: #dc3545 !important; /* Danger color background */
+    color: white !important; /* White text */
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.8) !important; /* Glowing effect */
+    outline: none !important;
+}
+
+/* Active page styling */
+.page-item.active .page-link {
+    background-color: #dc3545 !important; /* Danger color background */
+    color: white !important;
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.8) !important;
+}
+
+  
+  
