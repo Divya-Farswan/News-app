@@ -3,15 +3,17 @@ import fetch from 'node-fetch';
 export async function handler(event) {
   const API_KEY = process.env.NEWS_API_KEY;
 
-  // Extract query params from the frontend request
-  const params = new URLSearchParams(event.queryStringParameters);
-  const category = params.get("category");
-  const query = params.get("query");
+  const { category, query } = event.queryStringParameters;
+  
 
   let url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`;
   if (query) {
     url += `&q=${query}`;
   }
+
+  console.log("Category:", category);
+  console.log("Query:", query);
+  console.log("Final constructed URL:", url);
 
   
   console.log(" Using API KEY:", process.env.NEWS_API_KEY);

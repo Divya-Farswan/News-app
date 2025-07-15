@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import NewsItem from "./NewsItem";
-import Loader from "./Loader"; // Importing the Loader component
+import Loader from "./Loader";
 import Pagination from "./Pagination";
 
 const NewsBoard = ({ category, query }) => {
@@ -8,9 +8,8 @@ const NewsBoard = ({ category, query }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Define the number of items per page (e.g., 8 news items)
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -26,56 +25,54 @@ const NewsBoard = ({ category, query }) => {
         }
 
         setError(null);
-
+        const trimmedQuery = query?.trim(); // trim spaces
         let url = `/.netlify/functions/getNews?category=${category}`;
-        if (query) {
-          url += `&q=${query}`;
+        if (trimmedQuery) {
+          url += `&q=${trimmedQuery}`;
         }
 
-
-        // Perform the API call
         const response = await fetch(url);
-        
-        // If response status is not OK (200-299), throw an error.
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        // Convert response to JSON format.
         const data = await response.json();
-        console.log(" API URL:", url);
-        console.log(" Fetched Articles:", data?.articles);
+        let fetchedArticles = data?.articles ?? [];
 
-        // Update the articles state. Use an empty array if no articles are returned.
-        setArticles(data?.articles ?? []);
-        setCurrentPage(1);          // Reset to first page on new fetch to avoid page overflow
+        // Manually filter articles by keyword if needed
+        if (trimmedQuery) {
+          const lowerQuery = trimmedQuery.toLowerCase();
+          fetchedArticles = fetchedArticles.filter(article =>
+            article.title?.toLowerCase().includes(lowerQuery) ||
+            article.description?.toLowerCase().includes(lowerQuery)
+          );
+        }
+
+        console.log("API URL:", url);
+        console.log("Filtered Titles:", fetchedArticles.map(a => a.title));
+
+        setArticles(fetchedArticles);
+        setCurrentPage(1);
 
       } catch (err) {
         console.error("Error fetching news:", err);
         setError("Failed to load news. Please try again later.");
-
       } finally {
         setLoading(false);
         setHasFetched(true);
       }
     };
 
-    // Use a debounce approach: wait 500ms before calling the API to avoid too many requests.
     const timeoutId = setTimeout(() => {
       fetchNews();
     }, 500);
 
-    // Cleanup the timeout if category or query changes within 500ms.
     return () => clearTimeout(timeoutId);
   }, [category, query]);
 
-  // Calculate the articles to show on the current page:
-  // 1. Determine the index of the first and last article on the current page.
   const indexOfLastArticle = currentPage * itemsPerPage;
   const indexOfFirstArticle = indexOfLastArticle - itemsPerPage;
   const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
-
-  // Determine total pages for pagination
   const totalPages = Math.ceil(articles.length / itemsPerPage);
 
   return (
@@ -85,17 +82,25 @@ const NewsBoard = ({ category, query }) => {
         <span className="badge bg-danger mt-4 fs-3 p-2.5">News</span>
       </h2>
 
-      {/* Conditional rendering based on loading, error, and data states */}
+      {hasFetched && (
+        <div className="text-center my-2">
+          <h5 className="text-muted">
+            {query?.trim()
+              ? <>Showing results for <span className="text-primary fw-semibold">"{query.trim()}"</span></>
+              : <>Showing top headlines for <span className="text-success fw-semibold text-capitalize">"{category || 'general'}"</span></>}
+          </h5>
+        </div>
+      )}
+
       {
         loading
-          ? (<Loader />)
+          ? <Loader />
           : error
-            ? (<p className="text-danger text-center">{error}</p>)
+            ? <p className="text-danger text-center">{error}</p>
             : currentArticles.length > 0
               ? (
                 <>
-                  {/* Display current page of news items */}
-                  <div className="row bg-dark text-white mt-3 p-3" style={{ border: "1px solid #6c757d", borderRadius: "6px" }} >
+                  <div className="row bg-dark text-white mt-3 p-3" style={{ border: "1px solid #6c757d", borderRadius: "6px" }}>
                     {
                       currentArticles.map((news, index) => (
                         <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 pt-3">
@@ -105,20 +110,15 @@ const NewsBoard = ({ category, query }) => {
                     }
                   </div>
 
-
                   <div className="mt-4">
-                    {/* Pagination component is rendered below the news items */}
                     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
                   </div>
                 </>
               )
               : (
-
-                // If fetching is complete but no articles exist, show a message.
                 hasFetched && <p className="text-center mt-4">No news available.</p>
               )
       }
-
     </div>
   );
 };
